@@ -70,20 +70,10 @@ def internet_on():
     except urlib2.URLError as err: pass
     return False
 
-
-
-def process_and_store_online():
+def get_data_and_store():
     '''
-    Process and store data if internet is available
-    '''
-    while(True):
-                
-
-
-
-def process_and_store_locally():
-    '''
-    Process and store data locally if internet is not available
+    Get the necessary data, firstly store the data locally and then check 
+    if Internet is available. If available, send the data to the server
     '''
     while(True):
         # Use the current time as the file name
@@ -91,6 +81,9 @@ def process_and_store_locally():
         timestamp = now.strftime('%Y_%m_%d_%H_%M_%S')
         filename  = str(timestamp) + '.jpg'
         
+        # Save the current picture to file
+        os.system('raspistill -o ' + pi_folder_1 + filename)
+
         # Read data from humidity sensor
         # For more details about the APIs of the sensor, refer to:
         # learn.adafruit.com/dht-humidity-sensing-on-raspberry-pi-with-gdocs-logging/overview
@@ -118,20 +111,11 @@ def process_and_store_locally():
                         + ", Moisture C: %s"%check_moisture(moisture_pinC) + ", Time: %s"%timestamp + ", Test Site 2" + '\n')
         text_file.close()
         
+        if(internet_on()):
+            process_and_store_online()
+
         # Wait for some time to begin the next collection
         time.sleep(timedelay_2)
-        
-
-def get_data():
-    '''
-    Get the necessary data, the way to store it depends on whether the Internet access is available:
-    if available, send the data to the server
-    if not, store the data locally
-    '''
-    if(internet_on()):
-        process_and_store_online()
-    else:
-        process_and_store_locally()
 
 
 
