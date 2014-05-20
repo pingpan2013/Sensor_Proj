@@ -227,21 +227,21 @@ def Main_code(): ##runs code if internet is on
 			host = '198.57.219.221' 
 			user = 'camera@theparjanadistribution.com'
 			password = 'grzywacz1'
-			ftp_folder = 'Gallery/Mettetal_1/' ##website photo folder
+			ftp_folder = '/public_html/Gallery/Airport/Mettetal/Box1'
 
 			filename = str(timestamp) + '.jpg' ##picture file
 			os.system('raspistill -o ' + pi_folder + filename) ##save picture to file
 				
 			##save picture and upload picture to server via FTP	
-			#pi_picture = str(timestamp)
-			#session = ftplib.FTP(host,user,password)
-			#session.pwd()
-			#file = open(pi_folder + str(pi_picture) + '.jpg','rb')	# file to send
-			#myfolder = ftp_folder
-			#session.cwd(myfolder)
-			#session.storbinary('STOR ' + str(pi_picture)+ '.jpg',file) # send the file
-			#file.close() # close file and FTP
-			#session.quit()
+			pi_picture = str(timestamp)
+			session = ftplib.FTP(host,user,password)
+			session.pwd()
+			file = open(pi_folder + str(pi_picture) + '.jpg','rb')	# file to send
+			myfolder = ftp_folder
+			session.cwd(myfolder)
+			session.storbinary('STOR ' + str(pi_picture)+ '.jpg',file) # send the file
+			file.close() # close file and FTP
+			session.quit()
 				
 			##verify camera function works
 			print 'took picture ' + timestamp		
