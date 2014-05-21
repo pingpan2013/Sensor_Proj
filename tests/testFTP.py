@@ -5,7 +5,7 @@ from ftplib import FTP
 if __name__ == '__main__':
     host = '198.57.219.221' 
     user = 'pingpan@theparjanadistribution.com'
-    password = 'abcded'
+    password = 'wlx1134908'
     ftp_folder = '/testFTP/'
 
     # save picture and upload picture to server via FTP	

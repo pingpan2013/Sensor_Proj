@@ -7,17 +7,17 @@
 # The configuration information about the database and some other stuff
 #
 
-##############################################
-##### Directory for storing the results ######
-##############################################
+####################################################
+######### Local directory storing the results ######
+####################################################
 pi_folder = '/home/pi/Desktop/pictures/'      # the directory for storing the results if the internet is on
 pi_folder_1 = '/home/pi/Desktop/pictures_1/'  # the directory for storing the results if the internet is down
 usb_folder = '/media/PARJANA03_/'             # USB saving directory
 
 
-#############################################
-##### The hardware interface information ####
-#############################################
+####################################################
+######## The hardware interface information ########
+####################################################
 PI_id = 2           # ID of computer
 moisture_pinA = 0   # Moisture pin A (moisture pins can be in range from (0-8))
 moisture_pinB = 1   # Moisture pin B
@@ -26,21 +26,28 @@ pin_number = 22     # Pin that is connected to lightbulb
 humidity_pinA = 17  # Humidity sensor pin num
 
 
-############################################
-######### Acceptable time delay ############ 
-############################################
-time_1 = 40         # maincode wait time
-time_2 = 40         # no internet wait time 
-time_3 = 40         # internet wait time
+####################################################
+################# Time delay needed ################ 
+####################################################
+timedelay_1 = 4         # maincode wait time
+timedelay_2 = 4         # no internet wait time 
+timedelay_3 = 4         # internet wait time
 
 
-############################################
-###### Database Server Information #########
-############################################
+####################################################
+###### Database and FTP Server Information #########
+####################################################
 DB = {
     host = '198.57.219.221', 
     user = 'camera@theparjanadistribution.com',
     password = 'grzywacz1',
+    database = 'theparja_airport'
 }
 
-ftp_folder = 'Gallery/Mettetal_1/'      # Website photo folder
+FTP_Server = { 
+    host = '198.57.219.221',
+    user = 'camera@theparjanadistribution.com',
+    password = 'grzywacz1',
+    ftp_folder = 'Gallery/Mettetal_1/'
+}
+
