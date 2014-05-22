@@ -7,7 +7,7 @@
 # Control the sensor to get humidity and moisture infomation
 # If internet is down, store the result into local files
 # else send the data to the database
-# 
+#
 # Date: May 22nd, 2014
 #
 
@@ -53,12 +53,11 @@ def control_light(ifEnd):
     
     if ifEnd == True:
         GPIO.output(conf.pin_number, False)
-    #elif read_temp() < 34:                # If temperature is below 34 
+    #elif read_temp() < 34:                   # If temperature is below 34 
     elif 30 < 34: 
         GPIO.output(conf.pin_number, True)    # Turn on the light bulb on to warm up the computer
-    else:                               # Else turn off 
+    else:                                     # Else turn off 
         GPIO.output(conf.pin_number, False)
-
 
 def check_moisture(adcnum):
     '''
@@ -116,7 +115,9 @@ def store_data_to_ftp(filename):
    
     # Disconnect 
     session.quit()
+
     print "Uploaded picture" + filename
+
 
 
 def connect_db():
@@ -131,6 +132,8 @@ def connect_db():
     print 'Connected to database!'
     return conn
     
+
+
 
 def store_data_to_db(temp_f,        # The temperature data
                      humidity,      # The humidity data
@@ -156,6 +159,7 @@ def store_data_to_db(temp_f,        # The temperature data
                                 Moisture_C FLOAT NOT NULL,\
                                 Time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)"
         
+        #select_table_sql = 'SELECT * FROM Mettetal_2'
         insert_table_sql = "INSERT INTO Mettetal_2(\
                                 PI_id, Temperature_Internal,\
                                 Humidity_Internal, \
@@ -164,6 +168,7 @@ def store_data_to_db(temp_f,        # The temperature data
                                     +str(moistureA)+", " +str(moistureB)+", "+str(moistureC)+",\
                                     'Test Site 1')"
         cur.execute(create_table_sql)
+        #cur.execute(select_table_sql)
         cur.execute(insert_table_sql)
 
         print "Uploaded data!"
@@ -224,8 +229,8 @@ def get_data_and_store():
     filename  = str(timestamp) + '.jpg'     
        
     # SETP 1: Get all data from sensors
-    humidity, temp_f = get_humidity_and_temp()        # Get humidity and temperature
-    moistureA, moistureB, moistureC = get_moisture()  # Get moisture
+    humidity, temp_f = get_humidity_and_temp()          # Get humidity and temperature
+    moistureA, moistureB, moistureC = get_moisture()    # Get moisture
 
     ### The following parts are used to debug  ###
     print 'Took picture ' + timestamp		
@@ -258,6 +263,5 @@ def get_data_and_store():
     control_light(True)
     time.sleep(conf.period)
     restart()
-
 
 
