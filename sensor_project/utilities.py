@@ -32,22 +32,29 @@ import MySQLdb
 import spidev 
 import RPi.GPIO as GPIO
 
+# Turn on temperature and moisture sensors
+spi = spidev.SpiDev()
+spi.open(0,0)
 
 #####################################################################
 ######################## Utility functions ##########################
 #####################################################################
-def check_temperature():
+def control_light(ifEnd):
     '''
-    Check the temperature, if it is above 34, it won't
-    trun on the light bulbs
+    At the begining, ifEnd = False:
+        Check the temperature, if it is below 34, trun on the light
+    At the end, ifEnd = True:
+        Turn off the light
     '''
     GPIO.setmode(GPIO.BCM) 
     GPIO.setup(pin_number,GPIO.OUT)
     
-    if read_temp() < 34:                # If temperature is below 34 
-        GPIO.output(pin_number,True)    # Turn on the light bulb on to warm up the computer
+    if ifEnd == True:
+        GPIO.output(pin_number, False)
+    elif read_temp() < 34:                # If temperature is below 34 
+        GPIO.output(pin_number, True)    # Turn on the light bulb on to warm up the computer
     else:                               # Else turn off 
-        GPIO.output(pin_number,False)
+        GPIO.output(pin_number, False)
 
 def check_moisture(adcnum):
     '''
@@ -163,9 +170,29 @@ def get_humidity_and_temp():
     '''
     Get humidity and temperature data from sensors
     '''
+    output = subprocess.check_output(["./Adafruit_DHT", "2302", "4"]);
+    
+    matches = re.search("Temp =\s+([0-9.]+)", output)
+    if (not matches):
+        time.sleep(3)
+        continue
+    temp = float(matches.group(1))
+    temp_f = temp * 9.0 / 5.0 + 32.0 # converts temp to F
+    
+    # search for humidity printout
+    matches = re.search("Hum =\s+([0-9.]+)", output)
+    if (not matches):
+        time.sleep(3)
+        continue
+    humidity = float(matches.group(1))
+   
+    file = open("test1.txt", "a")
+    file.write(str(temp_f) + ',' + str(humidity) + '\n')
+    file.close()
 
+    return (humidity, temp_f)
 
-
+utput = subprocess.check_output()
 def get_moisture():
     '''
     Get the mositrue info from sensors
@@ -186,15 +213,17 @@ def get_data_and_store():
     3. Check if Internet is available. If available, send the data to the server
     4. Restart PI and then eepeat from 1
     '''
-    # Some preparation work
-    # check_temperature()
+    # Some preparation work:
+    # 1)Check temperature to decide if we need open bulbs
+    # 2)Get current time as the new file name
+    control_light(False)
     now = datetime.datetime.now()
     timestamp = now.strftime('%Y_%m_%d_%H_%M_%S')
     filename  = str(timestamp) + '.jpg'     
        
     # SETP 1: Get all data from sensors
     humidity, temp_f = get_humidity_and_temp()                 # Get humidity and temperature
-    mositureA, mositureB, moistureC = get_humidity_and_temp()  # Get moisture
+    mositureA, mositureB, moistureC = get_moisture()  # Get moisture
 
     ### The following parts are used to debug  ###
     if __debug__:
@@ -224,8 +253,7 @@ def get_data_and_store():
         connect_db()                 # store data to the database
         store_data_to_db(temp_f, humidity, moistureA, moistureB, moistureC)
     
-    # STEP 4: Restart PI
+    # STEP 4: Turn off the light and then restart PI
+    control_light(True)
     restart()
-
-
 
