@@ -26,27 +26,24 @@ humidity_pinA = 17  # Humidity sensor pin num
 
 
 ####################################################
-################# Time delay needed ################ 
+##### The time period between two collections ######
 ####################################################
-timedelay_1 = 1         # maincode wait time
-timedelay_2 = 1         # no internet wait time 
-timedelay_3 = 1         # internet wait time
-
+period = 900
 
 ####################################################
 ###### Database and FTP Server Information #########
 ####################################################
 DB = {
     'host' : '198.57.219.221', 
-    'user' : 'camera@theparjanadistribution.com',
-    'password' : 'grzywacz1',
+    'user' : 'theparja_georgeg',
+    'password' : 'ggrzywacz2190',
     'database' : 'theparja_airport'
 }
 
 FTP_Server = { 
     'host' : '198.57.219.221',
-    'user' : 'pingpan@theparjanadistribution.com',
-    'password' : 'wlx1134908',
-    'ftp_folder' : 'testFTP/'
+    'user' : 'data@theparjanadistribution.com',
+    'password' : 'Parjana1247',
+    'ftp_folder' : '/Airport/Mettetal/Camera1/'
 }
 
