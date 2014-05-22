@@ -57,6 +57,7 @@ def control_light(ifEnd):
     else:                               # Else turn off 
         GPIO.output(conf.pin_number, False)
 
+
 def check_moisture(adcnum):
     '''
     Read moisture from pins
@@ -118,7 +119,6 @@ def store_data_to_ftp(filename):
     print "Uploaded picture" + filename
 
 
-
 def connect_db():
     '''
     Build connection to the given database
@@ -131,8 +131,6 @@ def connect_db():
     print 'Connected to database!'
     return conn
     
-
-
 
 def store_data_to_db(temp_f,        # The temperature data
                      humidity,      # The humidity data
@@ -158,7 +156,6 @@ def store_data_to_db(temp_f,        # The temperature data
                                 Moisture_C FLOAT NOT NULL,\
                                 Time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)"
         
-        #select_table_sql = 'SELECT * FROM Mettetal_2'
         insert_table_sql = "INSERT INTO Mettetal_2(\
                                 PI_id, Temperature_Internal,\
                                 Humidity_Internal, \
@@ -167,7 +164,6 @@ def store_data_to_db(temp_f,        # The temperature data
                                     +str(moistureA)+", " +str(moistureB)+", "+str(moistureC)+",\
                                     'Test Site 1')"
         cur.execute(create_table_sql)
-        #cur.execute(select_table_sql)
         cur.execute(insert_table_sql)
 
         #if __debug__:
