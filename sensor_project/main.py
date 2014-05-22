@@ -9,12 +9,12 @@
 import datetime
 import time
 
-import conf.py
-import utilities.py
+import conf
+import utilities
 
 if __name__ == '__main__':
     
-    time.sleep(conf.timedelay1)    
-    get_data_and_store()
+    time.sleep(conf.timedelay_1)    
+    utilities.get_data_and_store()
 
 
