@@ -7,6 +7,8 @@
 # Control the sensor to get humidity and moisture infomation
 # If internet is down, store the result into local files
 # else send the data to the database
+# 
+# Date: May 22nd, 2014
 #
 
 import ftplib
@@ -114,8 +116,6 @@ def store_data_to_ftp(filename):
    
     # Disconnect 
     session.quit()
-
-    #if __debug__:
     print "Uploaded picture" + filename
 
 
@@ -166,7 +166,6 @@ def store_data_to_db(temp_f,        # The temperature data
         cur.execute(create_table_sql)
         cur.execute(insert_table_sql)
 
-        #if __debug__:
         print "Uploaded data!"
 
 def get_humidity_and_temp(): 
@@ -225,11 +224,10 @@ def get_data_and_store():
     filename  = str(timestamp) + '.jpg'     
        
     # SETP 1: Get all data from sensors
-    humidity, temp_f = get_humidity_and_temp()                 # Get humidity and temperature
+    humidity, temp_f = get_humidity_and_temp()        # Get humidity and temperature
     moistureA, moistureB, moistureC = get_moisture()  # Get moisture
 
     ### The following parts are used to debug  ###
-    #if __debug__:
     print 'Took picture ' + timestamp		
     print "Humidity:    %.1f %%" % humidity
     print "Internal Temperature: %.1f F" % temp_f
@@ -260,15 +258,6 @@ def get_data_and_store():
     control_light(True)
     time.sleep(conf.period)
     restart()
-
-
-
-
-if __name__ == '__main__':
-    
-    get_data_and_store()
-    
-    print "Finished Processing!"
 
 
 
