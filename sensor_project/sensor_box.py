@@ -120,14 +120,14 @@ def store_data_to_ftp(filename):
 
 
 
-def connect_db():
+def connect_db(database):
     '''
     Build connection to the given database
     '''
     conn = MySQLdb.connect(conf.DB['host'],
                            conf.DB['user'],
                            conf.DB['password'],
-                           conf.DB['database'])
+                           database)
     
     print 'Connected to database!'
     return conn
@@ -145,7 +145,7 @@ def store_data_to_db(temp_f,        # The temperature data
     First create the corresponding SQL codes
     Then execute them
     '''
-    conn = connect_db()
+    conn = connect_db(conf.DB['database'])
     with conn:
         cur = conn.cursor()
         create_table_sql = "CREATE TABLE IF NOT EXISTS Mettetal_2(\
