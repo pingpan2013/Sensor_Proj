@@ -1,7 +1,7 @@
 Sensor Projects
 ================================================
 
-Projects for the summer internship in Parjana. 
+Sensor projects for the summer internship in Parjana. 
 
 Used python codes to gather data from different sensors, namely moisture sensor, humidity sensor, camera and current sensor. Configured the database parts in server, and stored the data both locally and remotely for furthur uses in water management field. Also wrote scripts to control the data collection processes.
 
