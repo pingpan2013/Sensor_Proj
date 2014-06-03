@@ -54,7 +54,7 @@ def get_and_store_data():
     
     # Open the file for storing data locally
     try:
-        file = open("ct_data.txt", "a+")
+        file = open("./res_data/ct_data.txt", "a+")
         print "Local file opened!"
     except IOError:
         print "I/O Error in opening the file!"
