@@ -12,7 +12,7 @@ Related Sensors and Boards
 ------------------------------
 The detailed sensors information is as follows:
 
-**Humidity Sensor:**
+***Humidity Sensor:**
 The DHT22 Humidity Sensor, http://www.adafruit.com/products/385
 
 **Moisture Sensor:**
