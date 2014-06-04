@@ -30,8 +30,12 @@ The python library for the DHT22 Humidity Sensor: https://github.com/adafruit/ad
 
 **Software**
 
-The Arduino Software to control the **Arduino UNO board**
+The Arduino Software to control the Arduino UNO board
 http://arduino.cc/en/Main/Software
+
+##Group Members
+* Pingpan Cheng
+* George Grzywacz
 
 ##License
 * GNU Licence
