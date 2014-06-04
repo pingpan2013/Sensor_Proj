@@ -14,6 +14,8 @@ The detailed sensors information is as follows:
 
 **Humidity Sensor:** http://www.adafruit.com/products/385
 
+![Humidity Sensor](http://www.adafruit.com/products/385)
+
 **Moisture Sensor:**
 
 **Camera Sensor:** http://www.adafruit.com/products/1367
