@@ -26,11 +26,11 @@ The rests are embedded in the **Adafruit Raspberry Pi Board** http://www.adafrui
 
 ##Pre requisites
 -----------------------------------------
-* Library
+**Library**
 
 The python library for the DHT22 Humidity Sensor: https://github.com/adafruit/adafruit-raspberry-pi-python-code/#adafruits-raspberry-pi-python-code-library
 
-* Software
+**Software**
 
 The Arduino Software to control the **Arduino UNO board**
 http://arduino.cc/en/Main/Software
