@@ -13,7 +13,7 @@ Sensors
 The current sensor is embeded within the Arduino UNO Board http://arduino.cc/en/Main/ArduinoBoardUno. The rests are embedded in the Adafruit Raspberry Pi Board http://www.adafruit.com/categories/105. The detailed sensors information is as follows:
 
 
-**Humidity Sensor** The DHT22 Humidity Sensor, http://www.adafruit.com/products/385
+*Humidity Sensor** The DHT22 Humidity Sensor, http://www.adafruit.com/products/385
 
 **Moisture Sensor**
 
@@ -29,3 +29,6 @@ https://github.com/adafruit/adafruit-raspberry-pi-python-code/#adafruits-raspber
 
 The Arduino Software to control the **Arduino UNO board**
 http://arduino.cc/en/Main/Software
+
+## Licence
+* GNU License
