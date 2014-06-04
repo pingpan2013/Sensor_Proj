@@ -12,14 +12,12 @@ Related Sensors and Boards
 ------------------------------
 The detailed sensors information is as follows:
 
-***Humidity Sensor:**
-The DHT22 Humidity Sensor, http://www.adafruit.com/products/385
-
+**Humidity Sensor:** http://www.adafruit.com/products/385
 **Moisture Sensor:**
 
-**Camera Sensor:** Raspberry Pi Camera Board, http://www.adafruit.com/products/1367
+**Camera Sensor:** http://www.adafruit.com/products/1367
 
-**Current Sensor:** The AC Current Sensor: http://www.homautomation.org/2013/09/17/current-monitoring-with-non-invasive-sensor-and-arduino/
+**Current Sensor:** http://www.homautomation.org/2013/09/17/current-monitoring-with-non-invasive-sensor-and-arduino/
 
 The current sensor is embeded within the **Arduino UNO Board** http://arduino.cc/en/Main/ArduinoBoardUno. 
 The rests are embedded in the **Adafruit Raspberry Pi Board** http://www.adafruit.com/categories/105.
