@@ -12,13 +12,11 @@ Related Sensors and Boards
 ------------------------------
 The detailed sensors information is as follows:
 
-**Humidity Sensor:** http://www.adafruit.com/products/385
-
-![Humidity Sensor](http://www.adafruit.com/products/385)
+* Humidity Sensor:http://www.adafruit.com/products/385
 
 **Moisture Sensor:**
 
-**Camera Sensor:** http://www.adafruit.com/products/1367
+* Camera Sensor: http://www.adafruit.com/products/1367
 
 **Current Sensor:** http://www.homautomation.org/2013/09/17/current-monitoring-with-non-invasive-sensor-and-arduino/
 
