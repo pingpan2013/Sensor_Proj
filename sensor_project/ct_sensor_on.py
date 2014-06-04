@@ -66,13 +66,12 @@ def get_and_store_data():
     # Open the file for storing data locally
     try:
         file = open("./res_data/ct_on_data.txt", "a+")
-        print "Local file opened!"
     except IOError:
         print "I/O Error in opening the file!"
 
     # Connect to database for storing data remotely to the server
-    conn = connect_db(conf.DB['database_c'])
-    with conn:
+    try:
+        conn = connect_db(conf.DB['database_c'])
         cur = conn.cursor()
         create_table(cur)
         while True:    
@@ -95,11 +94,14 @@ def get_and_store_data():
             
             pre_power = data[0]
             time.sleep(2)
-        # END WHILE    
-    
-    file.close()
-    conn.close()
-
+    except KeyboardInterrupt:
+        raise
+    except MySQLdb.Error, e:
+        print "MySQL Error [%d]: %s".format(e.args[0], e.args[1]) 
+    finally:
+        file.close()
+        conn.close()
+        print "File and Connection closed!"
 
 if __name__ == "__main__":
 
