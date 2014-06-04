@@ -13,18 +13,14 @@ Related Sensors and Boards
 The detailed sensors information is as follows:
 
 * Humidity Sensor:http://www.adafruit.com/products/385
-
-**Moisture Sensor:**
-
+* Moisture Sensor: 
 * Camera Sensor: http://www.adafruit.com/products/1367
-
-**Current Sensor:** http://www.homautomation.org/2013/09/17/current-monitoring-with-non-invasive-sensor-and-arduino/
+* Current Sensor:  http://www.homautomation.org/2013/09/17/current-monitoring-with-non-invasive-sensor-and-arduino/
 
 The current sensor is embeded within the Arduino UNO board, and the rest of the boards are embedded in the Raspberry board: 
 
-**Arduino UNO Board** http://arduino.cc/en/Main/ArduinoBoardUno. 
-
-**Adafruit Raspberry Pi Board** http://www.adafruit.com/categories/105.
+* Arduino UNO Board: http://arduino.cc/en/Main/ArduinoBoardUno. 
+* Adafruit Raspberry Pi Board: http://www.adafruit.com/categories/105.
 
 ##Pre requisites
 -----------------------------------------
