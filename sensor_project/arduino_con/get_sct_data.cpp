@@ -13,13 +13,11 @@
  */
 
 #include "EmonLib.h"
-
 EnergyMonitor emon1;
 
 void setup(){
     
     Serial.begin(9600); 
-    
     emonl.cirrent(1, 111.1);  // Current: input pin, calibration
 }
 
