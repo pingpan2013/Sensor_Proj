@@ -37,12 +37,14 @@ if dhtpin <= 0:
     sys.exit(3)
  
 while True: 
-	try:
-		t, h = dhtreader.read(dev_type, dhtpin)
-		break
-	except TypeError:
-		continue
-	
+    try:
+	t, h = dhtreader.read(dev_type, dhtpin)
+	break
+    except TypeError:
+	continue
+    except:
+        print "Exception Happened: ", sys.exc_info()[0]
+
 if t and h:
    print("Temp = {0} *C, Hum = {1} %".format(t, h))
 else:

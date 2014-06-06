@@ -16,7 +16,18 @@ import time
 from datetime import datetime
 
 import conf
-import server_conn
+
+def connect_db(database):
+    '''
+    Build connection to the given database
+    '''
+    conn = MySQLdb.connect(conf.DB['host'],
+                           conf.DB['user'],
+                           conf.DB['password'],
+                           database)
+    
+    print 'Connected to database!'
+    return conn
 
 def store_data_to_local(file, status, curTime):
     text = "Status: " + str(status) + "  Timestamp: " + str(curTime) + "\n"
@@ -52,15 +63,12 @@ def get_and_store_data():
     # Build connection and get current data from USB port
     seri = serial.Serial(conf.ct_port, conf.ct_baudrate)
     
-    # Open the file for storing data locally
     try:
+        # Open the file for storing data locally
         file = open("./res_data/ct_on_data.txt", "a+")
-    except IOError:
-        print "I/O Error in opening the file!"
-
-    # Connect to database for storing data remotely to the server
-    try:
-        conn = server_conn.connect_db(conf.DB['database_c'])
+        
+        # Connect to database for storing data remotely to the server
+        conn = connect_db(conf.DB['database_c'])
         cur = conn.cursor()
         create_table(cur)
         while True:    
@@ -83,12 +91,12 @@ def get_and_store_data():
             
             pre_power = data[0]
             time.sleep(2)
+    except IOError:
+        print "I/O Error in opening the file!"
+    except KeyboardInterrupt:
+        raise
     except MySQLdb.Error, e:
         print "MySQL Error [%d]: %s".format(e.args[0], e.args[1]) 
-        return False
-    except:
-        print "Exception Happened: ", sys.exc_info().[0]
-        return False
     finally:
         file.close()
         conn.close()
@@ -96,7 +104,6 @@ def get_and_store_data():
 
 if __name__ == "__main__":
 
-    if get_and_store_data() == False:
-        print "Move On..."
+    get_and_store_data()
 
 
