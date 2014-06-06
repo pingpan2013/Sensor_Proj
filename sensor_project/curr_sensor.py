@@ -94,10 +94,12 @@ def get_and_store_data():
             
             pre_power = data[0]
             time.sleep(2)
-    except KeyboardInterrupt:
-        raise
     except MySQLdb.Error, e:
         print "MySQL Error [%d]: %s".format(e.args[0], e.args[1]) 
+        return False
+    except:
+        print "Exception Happened: ", sys.exc_info().[0]
+        return False
     finally:
         file.close()
         conn.close()
@@ -105,6 +107,7 @@ def get_and_store_data():
 
 if __name__ == "__main__":
 
-    get_and_store_data()
+    if get_and_store_data() == False:
+        print "Move On..."
 
 
