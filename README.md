@@ -13,14 +13,19 @@ Sensors
 The current sensor is embeded within the Arduino UNO Board http://arduino.cc/en/Main/ArduinoBoardUno. The rests are embedded in the Adafruit Raspberry Pi Board http://www.adafruit.com/categories/105. The detailed sensors information is as follows:
 
 
-**Humidity Sensor** The DHT22 Humidity Sensor, http://www.adafruit.com/products/385
+**Humidity Sensor:** 
+![The DHT22 Humidity Sensor](http://www.adafruit.com/products/385)
+
+**Temperature Sensor:**
+![Raspberry Pi DS18B20 Temperature Sensing](https://learn.adafruit.com/downloads/pdf/adafruits-raspberry-pi-lesson-11-ds18b20-temperature-sensing.pdf)
 
 **Moisture Sensor**
 
-**Camera** Raspberry Pi Camera Board, http://www.adafruit.com/products/1367
+**Camera Sensor:** 
+![Raspberry Pi Camera Board](http://www.adafruit.com/products/1367)
 
-**Current Sensor** The AC Current Sensor: http://www.homautomation.org/2013/09/17/current-monitoring-with-non-invasive-sensor-and-arduino/
-
+**Current Sensor** 
+![YHDC SCT-013-000 Current Transformer](http://openenergymonitor.org/emon/buildingblocks/report-yhdc-sct-013-000-current-transformer)
 
 Pre requisites
 -----------------------------------------
