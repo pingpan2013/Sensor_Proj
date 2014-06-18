@@ -13,7 +13,7 @@ Related Sensors and Boards
 The sensors we used including humidity sensor, moisture sensor, camera sensor, and current sensor. The detailed sensors information is as follows:
 
 * [The DHT22 Humidity Sensor](http://www.adafruit.com/products/385)
-* [Raspberry Pi DS18B20 Temperature Sensing](https://learn.adafruit.com/downloads/pdf/adafruits-raspberry-pi-lesson-11-ds18b20-temperature-sensing.pdf)
+* [DS18B20 Temperature Sensing](https://learn.adafruit.com/downloads/pdf/adafruits-raspberry-pi-lesson-11-ds18b20-temperature-sensing.pdf)
 * [Moisture Sensor](http://www.abra-electronics.com/products/SEN0114-Soil-Moisture-Sensor-(Arduino-Compatible)-Immersion-Gold.html)
 * [Raspberry Pi Camera Board](http://www.adafruit.com/products/1367)
 * [YHDC SCT-013-000 Current Transformer](http://openenergymonitor.org/emon/buildingblocks/report-yhdc-sct-013-000-current-transformer)
@@ -28,7 +28,8 @@ The current sensor is embeded within the Arduino UNO board, and the rest of the 
 **Library**
 
 * [The python library for the DHT22 Humidity Sensor](https://github.com/adafruit/adafruit-raspberry-pi-python-code/#adafruits-raspberry-pi-python-code-library)
-* [The python library for the Current Transformer](https://github.com/openenergymonitor/EmonLi)
+* [The python library for the Current Transformer](https://github.com/openenergymonitor/EmonLib)
+* [The python library for the DS18B20 Temperature Sensor](https://github.com/timofurrer/ds18b20)
 
 **Software**
 * [The Arduino Software Platform](http://arduino.cc/en/Main/Software)

@@ -18,7 +18,13 @@ import glob
 import sys
 import urllib2    # Used to test if internet is available
 import RPi.GPIO as GPIO
+
 import conf
+import server_conn
+import mois_sensor
+import humi_sensor
+import curr_sensor
+import temp_sensor
 
 def control_light(ifEnd):
     '''
@@ -32,20 +38,11 @@ def control_light(ifEnd):
     
     if ifEnd == True:
         GPIO.output(conf.pin_number, False)
-    #elif read_temp() < 34:                   # If temperature is below 34 
+    #TODO elif read_temp() < 34:              # If temperature is below 34 
     elif 30 < 34: 
         GPIO.output(conf.pin_number, True)    # Turn on the light bulb on to warm up the computer
     else:                                     # Else turn off 
         GPIO.output(conf.pin_number, False)
-
-def restart():
-    '''
-    Restart the PI
-    '''
-    command = '/usr/bin/sudo /sbin/shutdown -r now'
-    process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
-    output = process.communicate()[0]
-
 
 def internet_on():
     '''
@@ -76,8 +73,8 @@ def main():
     filename  = str(timestamp) + '.jpg'     
        
     # SETP 1: Get all data from sensors
-    humidity, temp_f = get_humidity_and_temp()          # Get humidity and temperature
-    moistureA, moistureB, moistureC = get_moisture()    # Get moisture
+    humidity, temp_f = humi_sensor.get_humidity_and_temp()          # Get humidity and temperature
+    moistureA, moistureB, moistureC = mois_sensor.get_moisture()    # Get moisture
 
     ### The following parts are used to debug  ###
     print 'Took picture ' + timestamp		
@@ -102,8 +99,8 @@ def main():
         
     # STEP 3: Send data to the server and database if Internet is available
     if internet_on():
-        store_data_to_ftp(filename)  # store pictures to FTP server
-        store_data_to_db(temp_f, humidity, moistureA, moistureB, moistureC)
+        server_conn.store_data_to_ftp(filename)  # store pictures to FTP server
+        server_conn.store_data_to_db(temp_f, humidity, moistureA, moistureB, moistureC)
     
     # STEP 4: Turn off the light and then restart PI
     control_light(True)
