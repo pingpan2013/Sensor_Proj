@@ -5,55 +5,79 @@
 # 
 # Desc:
 # The configuration information about the database and some other stuff
-# 
-# Date:
-# 05/20/2014
 #
 
+import RPi.GPIO as GPIO
 
-#------------------------------------------------------------
-#           Local directory storing the results 
-#------------------------------------------------------------
+#==================================================
+#     Local directory storing the results 
+#==================================================
 pi_folder = '/home/pi/Desktop/pictures/'      # the directory for storing the results if the internet is on
 pi_folder_1 = '/home/pi/Desktop/pictures_1/'  # the directory for storing the results if the internet is down
 usb_folder = '/media/PARJANA03_/'             # USB saving directory
 
-
-#------------------------------------------------------------
-#       The hardware interface information 
-#------------------------------------------------------------
-PI_id = 2           # ID of computer
+#===================================================
+#     The hardware interface information 
+#===================================================
+PI_id = 12          # ID of computer
 moisture_pinA = 0   # Moisture pin A (moisture pins can be in range from (0-8))
 moisture_pinB = 1   # Moisture pin B
 moisture_pinC = 2   # Moisture pin C
 pin_number = 22     # Pin that is connected to lightbulb
 humidity_pinA = 17  # Humidity sensor pin num
+led_yellow = 25     # Led that powers on when code starts
+led_green = 23      # Led that powers on when there is internet
 
-ct_port = '/dev/ttyACM0'    # USB port # of the Arduino board
-ct_baudrate = 9600              # The BAUD rate of the CT sensor when collecting data
 
-
-#------------------------------------------------------------
+#===================================================
 #    The time period between two collections 
-#------------------------------------------------------------
-period = 900
+#===================================================
+period = 60
 
 
-#------------------------------------------------------------
-#         Database and FTP Server Information 
-#------------------------------------------------------------
+#===================================================
+#     Database and FTP Server Information 
+#===================================================
 DB = {
     'host' : '198.57.219.221', 
     'user' : 'theparja_georgeg',
     'password' : 'ggrzywacz2190',
-    'database' : 'theparja_airport',
-    'database_c': 'theparja_Test'
+    'database' : 'theparja_residential'
 }
 
 FTP_Server = { 
     'host' : '198.57.219.221',
+    #'user' : '85_lake_basement_1@theparjanadistribution.com',
+    #'password' : 'Parjana1274',
+    #'ftp_folder' : '/Gallery/Residential/Basement_Monitoring/85_Lake_Brighton_MI/Basement_Camera_1/'
     'user' : 'data@theparjanadistribution.com',
     'password' : 'Parjana1247',
-    'ftp_folder' : '/Airport/Mettetal/Camera1/'
+    #'ftp_folder' : '/Airport/Mettetal/Camera1/'
+    'ftp_folder' : '/Residential/Basement_Monitoring/85_Lake_Brighton_MI/Basement_Camera_1/'
+    
 }
+
+
+#===================================================
+#             Utility Functions
+#===================================================
+def control_light(ifEnd):
+    '''
+    At the begining, ifEnd = False:
+        Check the temperature, if it is below 34, trun on the light
+    At the end, ifEnd = True:
+        Turn off the light
+    '''
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(pin_number,GPIO.OUT) 
+    
+    if ifEnd == True:
+        GPIO.output(pin_number, False)
+        #TODO elif read_temp() < 34:              # If temperature is below 34 
+    elif 30 < 34:
+        GPIO.output(pin_number, True)    # Turn on the light bulb on to warm up the computer
+    else:                                     # Else turn off 
+        GPIO.output(pin_number, False)
+
+
 

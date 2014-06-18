@@ -14,7 +14,7 @@ def get_humidity_and_temp():
     '''
     Get humidity and temperature data from sensors
     '''
-    output = subprocess.check_output(["./Adafruit_DHT2.py", "2302", "4"]);
+    output = subprocess.check_output(["./Adafruit_DHT2.py", "2302", "17"]);
     
     matches = re.search("Temp =\s+([0-9.]+)", output)
     if (not matches):

@@ -16,7 +16,6 @@ import time
 import datetime
 import glob
 import sys
-import urllib2    # Used to test if internet is available
 import RPi.GPIO as GPIO
 
 import conf
@@ -26,35 +25,7 @@ import humi_sensor
 import curr_sensor
 import temp_sensor
 
-def control_light(ifEnd):
-    '''
-    At the begining, ifEnd = False:
-        Check the temperature, if it is below 34, trun on the light
-    At the end, ifEnd = True:
-        Turn off the light
-    '''
-    GPIO.setmode(GPIO.BCM) 
-    GPIO.setup(conf.pin_number,GPIO.OUT)
-    
-    if ifEnd == True:
-        GPIO.output(conf.pin_number, False)
-    #TODO elif read_temp() < 34:              # If temperature is below 34 
-    elif 30 < 34: 
-        GPIO.output(conf.pin_number, True)    # Turn on the light bulb on to warm up the computer
-    else:                                     # Else turn off 
-        GPIO.output(conf.pin_number, False)
-
-def internet_on():
-    '''
-    Test if internet access is available
-    Return true if available, otherwise return false
-    '''
-    try:
-        response = urllib2.urlopen('http://74.125.228.100', timeout=1)
-        print 'Internet is On!'
-        return True
-    except urllib2.URLError as err: pass
-    return False
+GPIO.setwarnings(False)
 
 def main():
     '''
@@ -67,46 +38,52 @@ def main():
     # Some preparation work:
     # 1)Check temperature to decide if we need open bulbs
     # 2)Get current time as the new file name
-    control_light(False)
-    now = datetime.datetime.now()
-    timestamp = now.strftime('%Y_%m_%d_%H_%M_%S')
-    filename  = str(timestamp) + '.jpg'     
+    try:
+        conf.control_light(False)
+        now = datetime.datetime.now()
+        timestamp = now.strftime('%Y_%m_%d_%H_%M_%S')
+        filename  = str(timestamp) + '.jpg'     
        
-    # SETP 1: Get all data from sensors
-    humidity, temp_f = humi_sensor.get_humidity_and_temp()          # Get humidity and temperature
-    moistureA, moistureB, moistureC = mois_sensor.get_moisture()    # Get moisture
+        # SETP 1: Get all data from sensors
+        humidity, temp_f = humi_sensor.get_humidity_and_temp()          # Get humidity and temperature
+        moistureA, moistureB, moistureC = mois_sensor.get_moisture()    # Get moisture
 
-    ### The following parts are used to debug  ###
-    print 'Took picture ' + timestamp		
-    print "Humidity:    %.1f %%" % humidity
-    print "Internal Temperature: %.1f F" % temp_f
-    print "Moisture A = " + str(moistureA)
-    print "Moisture B = " + str(moistureB)
-    print "Moisture C = " + str(moistureC)
-    print 'uploaded picture ' + timestamp
+        ### The following parts are used to debug  ###
+        print 'Took picture ' + timestamp		
+        print "Humidity:    %.1f %%" % humidity
+        print "Internal Temperature: %.1f F" % temp_f
+        print "Moisture A = " + str(moistureA)
+        print "Moisture B = " + str(moistureB)
+        print "Moisture C = " + str(moistureC)
+        print 'uploaded picture ' + timestamp
 
-    # STEP 2: Store data locally
-    os.system('raspistill -o ' + conf.pi_folder_1 + filename)
-    text_file = open("/home/pi/Desktop/parjana_data.txt", "a")
-    text_file.write("PI_id: %s"%conf.PI_id 
+        # STEP 2: Store data locally
+        os.system('raspistill -o ' + conf.pi_folder_1 + filename)
+        text_file = open("/home/pi/Desktop/parjana_data.txt", "a")
+        text_file.write("PI_id: %s"%conf.PI_id 
                     + ", Internal Temp: %s"%temp_f 
                     + ", Internal Humidity: %s"%humidity 
                     + ", Moisture A: %s"%moistureA 
                     + ", Moisture B: %s"%moistureB 
                     + ", Moisture C: %s"%moistureC
                     + ", Time: %s"%timestamp + ", Test Site 2" + '\n')
-    text_file.close()
-        
-    # STEP 3: Send data to the server and database if Internet is available
-    if internet_on():
-        server_conn.store_data_to_ftp(filename)  # store pictures to FTP server
-        server_conn.store_data_to_db(temp_f, humidity, moistureA, moistureB, moistureC)
+        text_file.close()
     
-    # STEP 4: Turn off the light and then restart PI
-    control_light(True)
-    time.sleep(conf.period)
-    os.system('sudo reboot')
-
+        print 'Waiting for internet reconfiguration .... '
+        time.sleep(conf.period*2)
+    
+        # STEP 3: Send data to the server and database if Internet is available
+        if server_conn.internet_on() == True:
+            server_conn.store_data_to_ftp(filename)  # store pictures to FTP server
+            server_conn.store_data_to_db(temp_f, humidity, moistureA, moistureB, moistureC)
+        else:
+            print 'Internet is off'
+    finally:
+        # STEP 4: Turn off the light and then restart PI
+        conf.control_light(True)
+        print 'Rebooting ...'
+        time.sleep(conf.period)
+        os.system('sudo reboot')
 
 if __name__ == '__main__':
 

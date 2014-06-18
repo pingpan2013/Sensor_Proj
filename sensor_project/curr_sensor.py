@@ -87,7 +87,7 @@ def get_and_store_data():
         print "MySQL Error [%d]: %s".format(e.args[0], e.args[1]) 
         return False
     except:
-        print "Exception Happened: ", sys.exc_info().[0]
+        print "Exception Happened: ", sys.exc_info()[0]
         return False
     finally:
         file.close()

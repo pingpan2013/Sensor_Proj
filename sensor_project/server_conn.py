@@ -8,8 +8,20 @@
 
 import MySQLdb
 import ftplib
-
+import urllib2
 import conf
+
+def internet_on():
+    '''
+    Test if internet access is available
+    Return true if available, otherwise return false
+    '''
+    try:
+        response = urllib2.urlopen('http://74.125.228.100', timeout=1)
+        print 'Internet is On!'
+        return True
+    except urllib2.URLError as err: pass
+    return False
 
 def store_data_to_ftp(filename):
     '''
@@ -61,7 +73,7 @@ def store_data_to_db(temp_f,        # The temperature data
     conn = connect_db(conf.DB['database'])
     with conn:
         cur = conn.cursor()
-        create_table_sql = "CREATE TABLE IF NOT EXISTS Mettetal_2(\
+        create_table_sql = "CREATE TABLE IF NOT EXISTS 85_Lake_Basement_1(\
                                 id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,\
                                 PI_id TINYINT(6),\
                                 Location VARCHAR(255),\
@@ -73,7 +85,7 @@ def store_data_to_db(temp_f,        # The temperature data
                                 Time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)"
         
         #select_table_sql = 'SELECT * FROM Mettetal_2'
-        insert_table_sql = "INSERT INTO Mettetal_2(\
+        insert_table_sql = "INSERT INTO 85_Lake_Basement_1(\
                                 PI_id, Temperature_Internal,\
                                 Humidity_Internal, \
                                 Moisture_A, Moisture_B, Moisture_C, Location)\
