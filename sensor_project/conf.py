@@ -32,8 +32,7 @@ led_green = 23      # Led that powers on when there is internet
 #===================================================
 #    The time period between two collections 
 #===================================================
-period = 60
-
+period = 120
 
 #===================================================
 #     Database and FTP Server Information 
@@ -61,23 +60,15 @@ FTP_Server = {
 #===================================================
 #             Utility Functions
 #===================================================
-def control_light(ifEnd):
+def control_LED(pin_num, ifOn):
     '''
-    At the begining, ifEnd = False:
-        Check the temperature, if it is below 34, trun on the light
-    At the end, ifEnd = True:
-        Turn off the light
+    Control the LED light according to the pin number
+        if ifOn = True, to turn it on
+        else to turn it off
     '''
     GPIO.setmode(GPIO.BCM)
-    GPIO.setup(pin_number,GPIO.OUT) 
-    
-    if ifEnd == True:
-        GPIO.output(pin_number, False)
-        #TODO elif read_temp() < 34:              # If temperature is below 34 
-    elif 30 < 34:
-        GPIO.output(pin_number, True)    # Turn on the light bulb on to warm up the computer
-    else:                                     # Else turn off 
-        GPIO.output(pin_number, False)
+    GPIO.setup(pin_num, GPIO.OUT)
+    GPIO.output(pin_num, ifOn)
 
 
 
