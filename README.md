@@ -41,5 +41,5 @@ The current sensor is embeded within the Arduino UNO board, and the rest of the 
 ##License
 * GNU Licence
 
-##Pictures
-* ![Raspberry PI Board](http://en.wikipedia.org/wiki/Raspberry_Pi#mediaviewer/File:RaspberryPi.jpg)
+##Cool Pictures
+* ![Board with sensors](http://www.adafruit.com/images/1200x900/914-00.jpg)
