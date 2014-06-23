@@ -18,9 +18,11 @@ import urllib2    # Used to test if internet is available
 import urllib
 import re
 import subprocess
+import glob
 
 ##### My configuration file ####
 import conf
+import temp_sensor
 
 ##### Connection interface with MySQL ######
 import MySQLdb
@@ -32,8 +34,6 @@ import RPi.GPIO as GPIO
 # Turn on temperature and moisture sensors
 spi = spidev.SpiDev()
 spi.open(0,0)
-
-GPIO.setwarnings(False)
 
 #####################################################################
 ######################## Utility functions ##########################
@@ -59,24 +59,6 @@ def control_light_off(num):
 	GPIO.setup(num,GPIO.OUT)
 	GPIO.output(num,False)
 
-def control_light(ifEnd):
-    '''
-    At the begining, ifEnd = False:
-        Check the temperature, if it is below 34, trun on the light
-    At the end, ifEnd = True:
-        Turn off the light
-    '''
-    GPIO.setmode(GPIO.BCM) 
-    GPIO.setup(conf.pin_number,GPIO.OUT)
-    
-    if ifEnd == True:
-        GPIO.output(conf.pin_number, False)
-    #TODO: elif read_temp() < 34:                # If temperature is below 34 
-    elif 30 < 34: 
-        GPIO.output(conf.pin_number, True)    # Turn on the light bulb on to warm up the computer
-    else:                               # Else turn off 
-        GPIO.output(conf.pin_number, False)
-
 def check_moisture(adcnum):
     '''
     Read moisture from pins
@@ -88,7 +70,7 @@ def check_moisture(adcnum):
     r = spi.xfer2([1, (8 + adcnum)<<4, 0])
     adcout = ((r[1]&3) << 8) + r[2]
     return adcout
-
+ 
 def internet_on():
     '''
     Test if internet access is available
@@ -125,7 +107,7 @@ def store_data_to_ftp(filename):
     session.quit()
 
     #if __debug__:
-    print "Uploaded picture to ftp server!" + filename
+    print "Uploaded picture" + filename
 
 def connect_db():
     '''
@@ -140,7 +122,7 @@ def connect_db():
     return conn
 
 def store_data_to_db(temp_f,        # The temperature data
-                     humidity,      # The humidity data
+		     humidity,      # The humidity data
                      moistureA,     # The mositure data from PinA
                      moistureB,     # The moisture data from PinB
                      moistureC):    # The mositure data from pinC
@@ -153,41 +135,54 @@ def store_data_to_db(temp_f,        # The temperature data
     with conn:
         cur = conn.cursor()
         create_table_sql = "CREATE TABLE IF NOT EXISTS 85_Lake_Basement_1(\
-                                id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,\
-                                PI_id TINYINT(6),\
-                                Location VARCHAR(255),\
-                                Temperature_Internal FLOAT NOT NULL,\
-                                Humidity_Internal FLOAT NOT NULL,\
-                                Moisture_A FLOAT NOT NULL,\
-                                Moisture_B FLOAT NOT NULL,\
-                                Moisture_C FLOAT NOT NULL,\
-                                Time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)"
+                                        id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,\
+                                        PI_id TINYINT(6),\
+                                        Location VARCHAR(255),\
+                                        Temperature FLOAT NOT NULL,\
+					Humidity FLOAT NOT NULL,\
+                                        Moisture_A FLOAT NOT NULL,\
+                                        Moisture_B FLOAT NOT NULL,\
+                                        Moisture_C FLOAT NOT NULL,\
+                                        Time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)"
         
-        #select_table_sql = 'SELECT * FROM 85_Lake_Basement_1'
         insert_table_sql = "INSERT INTO 85_Lake_Basement_1(\
-                                PI_id, Temperature_Internal,\
-                                Humidity_Internal, \
-                                Moisture_A, Moisture_B, Moisture_C, Location)\
-                            VALUES("+str(conf.PI_id)+", "+str(temp_f)+", "   +str(humidity)+", "\
-                                    +str(moistureA)+", " +str(moistureB)+", "+str(moistureC)+",\
-                                    'Test Site 1')"
+                                        PI_id,\
+                                        Temperature,\
+					Humidity,\
+                                        Moisture_A,\
+                                        Moisture_B,\
+                                        Moisture_C,\
+                                        Location)\
+                                        VALUES("+str(conf.PI_id)+",\
+                                                "+str(temp_f)+",\
+						"+str(humidity)+",\
+                                                "+str(moistureA)+",\
+                                                "+str(moistureB)+",\
+                                                "+str(moistureC)+",\
+                                                'Test Site 01')"
         cur.execute(create_table_sql)
-        #cur.execute(select_table_sql)
         cur.execute(insert_table_sql)
-
+       
         #if __debug__:
-        print "Uploaded data to database!"
+        print "Uploaded data!"
+    
+def get_moisture():
+    '''
+    Get the mositrue info from sensors
+    '''
+    moistureA = check_moisture(conf.moisture_pinA)
+    moistureB = check_moisture(conf.moisture_pinB)
+    moistureC = check_moisture(conf.moisture_pinC)
+
+    return (moistureA, moistureB, moistureC) 
+
 
 def get_humidity_and_temp(): 
     '''
     Get humidity and temperature data from sensors
     '''
-    try:
-        output = subprocess.check_output(["./Adafruit_DHT2.py", "2302", "17"]);
-    except Exception:
-        print 'Exception happened with humidity sensor ......'
-        return (None, None)
-
+    output = subprocess.check_output(["./Adafruit_DHT2.py", "2302", "17"]);
+    
     matches = re.search("Temp =\s+([0-9.]+)", output)
     if (not matches):
         time.sleep(3)
@@ -204,18 +199,6 @@ def get_humidity_and_temp():
    
     return (humidity, temp_f)
 
-def get_moisture():
-    '''
-    Get the mositrue info from sensors
-    '''
-    try:
-        moistureA = check_moisture(conf.moisture_pinA)
-        moistureB = check_moisture(conf.moisture_pinB)
-        moistureC = check_moisture(conf.moisture_pinC)
-        return (moistureA, moistureB, moistureC) 
-    except Exception:
-        print 'Exception happened with moisture sensor ......'
-        return (None, None, None)
 
 # The main function  
 def get_data_and_store():
@@ -229,78 +212,75 @@ def get_data_and_store():
     # Some preparation work:
     # 1)Check temperature to decide if we need open bulbs
     # 2)Get current time as the new file name
-    try:
-        print '<<<<<<<<<<<<<<< Begin data collection >>>>>>>>>>>>>>'
-        control_light(False)
+    count = 0
+    while count < 10:
         control_light_on(25)    
-        time.sleep(conf.period/2)
-    
         now = datetime.datetime.now()
         timestamp = now.strftime('%Y_%m_%d_%H_%M_%S')
         filename  = str(timestamp) + '.jpg'     
 
         # SETP 1: Get all data from sensors
-        print 'Turn on light for camera >>'
-        #control_light_on(24)
-        time.sleep(5)
-        print 'Taking picture ' + timestamp
-        os.system('sudo raspistill -o ' + conf.pi_folder_1 + filename)
-        print 'Turn off light for camera >>'
-        #control_light_off(24)
+        moistureA, moistureB, moistureC = get_moisture()
+        humidity, temp_f = get_humidity_and_temp()
 
-        humidity, temp_f = get_humidity_and_temp()  
-        if (humidity, temp_f) == (None, None):
-            print 'Continue >>>>>>>'
-    
-        moistureA, moistureB, moistureC = get_moisture()  
-        if (moistureA, moistureB, moistureC) == (None, None, None):
-            print 'Continue >>>>>>>'
-    
-        ### The following parts are used to debug  ###
         print "Humidity: %.1f %%" % humidity
-        print "Internal Temperature: %.1f F" % temp_f
+        print "Temperature: %.1f F" % temp_f    
         print "Moisture A = " + str(moistureA)
         print "Moisture B = " + str(moistureB)
         print "Moisture C = " + str(moistureC)
 
         # STEP 2: Store data locally
+        control_light_on(24)
+        time.sleep(5)    
+        os.system('raspistill -o ' + conf.pi_folder_1 + filename)
+        print 'Took picture ' + timestamp    
+        time.sleep(5)	
+        control_light_off(24)	
+	
         text_file = open("/home/pi/Desktop/parjana_data.txt", "a")
         text_file.write("PI_id: %s"%conf.PI_id 
-                    + ", Internal Temp: %s"%temp_f 
-                    + ", Internal Humidity: %s"%humidity 
+                    + ", External Temp: %s"%temp_f  
                     + ", Moisture A: %s"%moistureA 
                     + ", Moisture B: %s"%moistureB 
                     + ", Moisture C: %s"%moistureC
-                    + ", Time: %s"%timestamp + ", 85_Lake_Basement_1" + '\n')
+                    + ", Time: %s"%timestamp + ",Test Site 3" + '\n')
         text_file.close()
-        
-        # STEP 3: Send data to the server and database if Internet is available
-        print 'Waiting for internet reconfigurration ...'
-        time.sleep(conf.period)
-        
-        if internet_on() == True:
-	    print 'Internet is ON, sending data to server >>>>>'
-            control_light_on(23)
-	    store_data_to_ftp(filename)  # store pictures to FTP server
-	    connect_db()                 # store data to the database
-	    store_data_to_db(temp_f, humidity, moistureA, moistureB, moistureC)
-        else:
-            print 'Internet is off, data stored locally!'
-
-        # STEP 4: Turn off the light and then restart PI
-        control_light(True)
-        control_light_off(23)
-        control_light_off(25)
-        print "<<<<<<<<<<< Finished Processing! >>>>>>>>>>>> "
-    finally:
-        print 'Rebooting ..... '
+    
+        print 'Wait for wifi reconfiguration ...'
         time.sleep(conf.period/2)
-        os.system('sudo reboot')
 
-       
+        # STEP 3: Send data to the server and database if Internet is available
+        if internet_on():
+	    print 'Internet is on!'
+            control_light_on(23)
+	    '''store pictures to FTP server'''
+	    store_data_to_ftp(filename)  
+	    '''store data to the database'''
+            store_data_to_db(temp_f, humidity, moistureA, moistureB, moistureC)
+            os.system('rm -f ' + conf.pi_folder_1 + filename)
+        else:
+            control_light_off(23)
+            control_light_off(25)
+            print 'Internet is off! Rebooting ...'
+            time.sleep(conf.period/2)
+            os.system('sudo reboot')
+
+        print '<<<<<<<<<<<< COUNT = {0} >>>>>>>>>>>'.format(count)
+        count += 1
+        time.sleep(conf.period/2)
+    # END WHILE    
+        
+    # STEP 4: Turn off the light and then restart PI
+    control_light_off(23)
+    control_light_off(25)
+    print 'Rebooting ...'
+    os.system('sudo reboot')
 
 if __name__ == '__main__':
     
     get_data_and_store()
- 
+    
+    print "Finished Processing!"
+
+
 
