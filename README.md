@@ -11,7 +11,7 @@ Related Sensors and Boards
 ------------------------------
 The sensors we used including humidity sensor, moisture sensor, camera sensor, and current sensor. The detailed sensors information is as follows:
 
-* [The DHT22 Humidity Sensor](http://www.adafruit.com/products/385)
+* [The DHT22 Humidity/Temperature Sensor](http://www.adafruit.com/products/385)
 * [DS18B20 Temperature Sensor](https://learn.adafruit.com/downloads/pdf/adafruits-raspberry-pi-lesson-11-ds18b20-temperature-sensing.pdf)
 * [Moisture Sensor](http://www.abra-electronics.com/products/SEN0114-Soil-Moisture-Sensor-(Arduino-Compatible)-Immersion-Gold.html)
 * [Raspberry Pi Camera Board](http://www.adafruit.com/products/1367)
@@ -42,4 +42,5 @@ The current sensor is embeded within the Arduino UNO board, and the rest of the 
 * GNU Licence
 
 ##Cool Pictures
-* ![Board with sensors](http://www.adafruit.com/images/1200x900/914-00.jpg)
+* Board with Wifi Adapter
+* ![Wifi Adapter](http://www.savagehomeautomation.com/storage/post-images/raspberrypi/edimax-pi3.png?__SQUARESPACE_CACHEVERSION=1350766193780)
