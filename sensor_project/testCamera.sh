@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# TEST CAMERA SENSOR
 
 for (( c=1; c<10; c++))
 do
