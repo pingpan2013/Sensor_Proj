@@ -42,7 +42,7 @@ The current sensor is embeded within the Arduino UNO board, and the rest of the 
 * GNU Licence
 
 ##Cool Pictures
-* Raspberry PI Board
-* ![PI](http://www.savagehomeautomation.com/storage/thumbnails/13113340-20696133-thumbnail.jpg?__SQUARESPACE_CACHEVERSION=1350766246395)
-* Board with Wifi Adapter
-* ![Wifi Adapter](http://www.savagehomeautomation.com/storage/thumbnails/13113340-20696109-thumbnail.jpg?__SQUARESPACE_CACHEVERSION=1350766052558)
+![PI](http://www.savagehomeautomation.com/storage/thumbnails/13113340-20696104-thumbnail.jpg?__SQUARESPACE_CACHEVERSION=1350765957292)
+![PI](http://www.savagehomeautomation.com/storage/thumbnails/13113340-20696109-thumbnail.jpg?__SQUARESPACE_CACHEVERSION=1350766052558)
+![PI](http://www.savagehomeautomation.com/storage/thumbnails/13113340-20696133-thumbnail.jpg?__SQUARESPACE_CACHEVERSION=1350766246395)
+![Wifi Adapter](http://www.savagehomeautomation.com/storage/thumbnails/13113340-20696109-thumbnail.jpg?__SQUARESPACE_CACHEVERSION=1350766052558)
