@@ -14,9 +14,9 @@ def test():
         return 1    
 
 def reconnect():
-    os.system("netsh wlan disconnect")
+    os.system("ifconfig wlan0 down")
     time.sleep(3)
-    os.system("netsh wlan connect name=NAME ssid=SSID")
+    os.system("./restart_wifi.sh")
 
 def monitor():
     while 1:
