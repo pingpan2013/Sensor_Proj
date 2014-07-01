@@ -18,10 +18,19 @@ def internet_on():
     '''
     try:
         response = urllib2.urlopen('http://74.125.228.100', timeout=1)
-        print 'Internet is On!'
         return True
     except urllib2.URLError as err: pass
     return False
+
+def check_folder(path):
+    '''
+    Check the given folder to list all the files
+    Return all the files
+    '''
+    files = [f for f in os.listdir(path) if os.path.isfile(os.path.loin(path, f))]
+    for i in files:
+        print i
+    return files
 
 def store_data_to_ftp(filename):
     '''
@@ -36,16 +45,25 @@ def store_data_to_ftp(filename):
     print 'Connected to FTP server'
 
     # Access the target directory and send the picture
+    #session.pwd()
+    #file = open(conf.pi_folder_1 + filename, 'rb')
+    #session.cwd(conf.FTP_Server['ftp_folder'])
+    #session.storbinary('STOR ' + filename, file)
+    #file.close()
+    files = check_folder(conf.pi_folder_1)
+    files.append(filename)
+
     session.pwd()
-    file = open(conf.pi_folder_1 + filename, 'rb')
-    session.cwd(conf.FTP_Server['ftp_folder'])
-    session.storbinary('STOR ' + filename, file)
-    file.close()
-   
+    for file in files:
+        file2send = open(conf.pi_folder_1 + file, 'rb')
+        session.cwd(conf.FTP_Server['ftp_folder'])
+        session.storbinary('STOR ' + file, file2send)
+        print "Uploaded picture" + file
+        file2send.close()
+
     # Disconnect 
     session.quit()
 
-    print "Uploaded picture" + filename
 
 def connect_db(database):
     '''
@@ -58,7 +76,6 @@ def connect_db(database):
     
     print 'Connected to database!'
     return conn
-
 
 def store_data_to_db(temp_f,        # The temperature data
                      humidity,      # The humidity data

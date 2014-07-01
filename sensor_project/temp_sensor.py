@@ -44,17 +44,15 @@ def get_mult_temp_data():
 
     try:        
         sensor = DS18B20()
-        while True:
-            for sensor_id in DS18B20.get_available_sensors():
-                sensors.append(DS18B20(sensor_id))
-            
-            i = 0;
-            for sensor in sensors:
-                temps[i] = sensor.get_temperature(DS18B20.DEGREES_F) 
-                print "Sensor {0} : {1}".format(sensor.get_id(), temps[i])
-                i++
-                
-            sleep(1)
+        for sensor_id in DS18B20.get_available_sensors():
+            sensors.append(DS18B20(sensor_id))
+        
+        i = 0;
+        for sensor in sensors:
+            temps[i] = sensor.get_temperature(DS18B20.DEGREES_F) 
+            print "Sensor {0} : {1}".format(sensor.get_id(), temps[i])
+            i++
+        return temps
     except:
         print "Exception Happened: ", sys.exc_info()[0]
         return False
@@ -64,3 +62,6 @@ if __name__ == "__main__":
 
     if get_temp_data() == False:
         print "Move On >>>>>"
+
+
+

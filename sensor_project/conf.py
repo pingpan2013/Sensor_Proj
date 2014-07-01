@@ -46,14 +46,9 @@ DB = {
 
 FTP_Server = { 
     'host' : '198.57.219.221',
-    #'user' : '85_lake_basement_1@theparjanadistribution.com',
-    #'password' : 'Parjana1274',
-    #'ftp_folder' : '/Gallery/Residential/Basement_Monitoring/85_Lake_Brighton_MI/Basement_Camera_1/'
     'user' : 'data@theparjanadistribution.com',
     'password' : 'Parjana1247',
-    #'ftp_folder' : '/Airport/Mettetal/Camera1/'
     'ftp_folder' : '/Residential/Basement_Monitoring/85_Lake_Brighton_MI/Basement_Camera_1/'
-    
 }
 
 
