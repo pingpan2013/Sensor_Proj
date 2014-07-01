@@ -75,7 +75,7 @@ def main():
         conf.control_LED(23, True)
         server_conn.store_data_to_ftp(filename)  # store pictures to FTP server
         server_conn.store_data_to_db(temp_f, humidity, moistureA, moistureB, moistureC)
-        os.system("rm -f " + conf.pi_folder_1 + filename)
+        os.system("rm -f " + conf.pi_folder_1 + '*')
     else:
         print 'Internet is off'
     
