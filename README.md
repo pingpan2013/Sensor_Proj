@@ -1,4 +1,4 @@
-Sensor Box Project
+#Sensor Box Project
 ================================================
 
 Sensor Box project for the summer internship in Parjana. 
@@ -7,7 +7,7 @@ Used python codes to gather data from different kinds of sensors, namely moistur
 
 In the end, it should work like this: Once plugged in the power for the Raspberry PI Board, the micro computer(loaded with customized Linux system) within the board will boot up and run the codes automitically to gather and store the necessay data. After 15mins, the micro computer will reboot to begin another cycle.
 
-Related Sensors and Boards
+##Related Sensors and Boards
 ------------------------------
 The sensors we used including humidity sensor, moisture sensor, camera sensor, and current sensor. The detailed sensors information is as follows:
 
