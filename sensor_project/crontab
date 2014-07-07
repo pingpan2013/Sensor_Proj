@@ -1,2 +1,0 @@
-@reboot sudo python sensor_box.py
-@reboot sudo python force_reboot.py
