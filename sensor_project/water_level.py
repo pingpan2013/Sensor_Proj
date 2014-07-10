@@ -66,36 +66,33 @@ def get_and_store_data():
     '''
     try:
         while True:   
-            file = open("./water_level.txt", "a+")
-            conn = server_conn.connect_db(conf.DB['database'])
-            cur = conn.cursor()
-            create_table(cur)
-            
             curTime = datetime.now()
             curTime = curTime.strftime('%Y_%m_%d_%H_%M_%S')
             
+            file = open("./water_level.txt", "a+")
+            conn = server_conn.connect_db(conf.DB['database'])
             seri = serial.Serial(conf.sc_port, conf.sc_baud)
-            line = seri.readline()
-            data = line.split(',')
-            if len(data) != 2:
-                print "Wrong Values! Beginning the next collection!"
-                continue
-            else:
-                res = float(data[0])
-                vol = float(data[1])
-                print "Resistance: " + str(res) + ", Vol: " + str(vol)
             
-            status = determineWaterLevel(res)
-            print "Water Level: " + str(status)
-
-            store_data_to_local(file, str(status), str(vol), curTime)
-            store_data_to_server(cur, str(status), str(vol))
+            with conn, seri, file:
+                line = seri.readline()
+                data = line.split(',')
+                if len(data) != 2:
+                    print "Wrong Values! Beginning the next collection!"
+                    continue
+                else:
+                    res = float(data[0])
+                    vol = float(data[1])
+                    print "Resistance: " + str(res) + ", Vol: " + str(vol)
             
-            conn.close()
-            seri.close()
-            file.close()
-            print "================================================"
-            time.sleep(10)
+                status = determineWaterLevel(res)
+                print "Water Level: " + str(status)
+                
+                cur = conn.cursor()
+                create_table(cur)
+                store_data_to_local(file, str(status), str(vol), curTime)
+                store_data_to_server(cur, str(status), str(vol))
+                print "================================================"
+                time.sleep(10)
     except IOError:
         print "I/O Error in opening the file!"
     except MySQLdb.Error, e:
@@ -103,10 +100,13 @@ def get_and_store_data():
     finally:
         if file.closed == False:
             file.close()
+        
         if seri.isOpen() == True:
             seri.close()
-        if conn.open == True:
+        
+        if conn.open == False:
             conn.close()
+        print "All Interfaces are closed! Exiting ..."
 
 if __name__ == "__main__":
 
