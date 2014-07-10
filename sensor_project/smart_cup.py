@@ -13,76 +13,94 @@
 import serial
 import MySQLdb
 import time
+import sys
 from datetime import datetime
 
 import conf
 import server_conn
 
-def store_data_to_local(file, status, curTime):
-    text = "Status: " + str(status) + "  Timestamp: " + str(curTime) + "\n"
+def store_data_to_local(file, status, vol, curTime):
+    text = str(status) + "," + str(vol) + "," + str(curTime) + "\n"
     file.write(text)
-
+    
+    print "Stored data locally!"
 
 def create_table(cur):
-    create_table_sql = "create table if not exists currentInfor(\
+    create_table_sql = "create table if not exists waterLevelInfor(\
                             id int(11) auto_increment primary key,\
                             status varchar(20) not null,\
+                            volume varchar(20) not null,\
                             curTime timestamp default current_timestamp)"
     
+    print "GOOD IN"
     cur.execute(create_table_sql)
+    print "GOOD OUT"
+    print "Created table!"
 
+def store_data_to_server(cur, status, vol):
+    insert_table_sql = "insert into waterLevelInfor(\
+                            status, volume)\
+                        values (" + str(status) + ", " + str(vol) + ")"
+    cur.execute(insert_table_sql)
 
-def store_data_to_server(cur, status):
-    insert_table_sql = "insert into currentInfor(status) values (%s)"
-    args = (status)
-    cur.execute(insert_table_sql, args)
+    print "Uploaded data to database!"
 
-
-def determineIfOn(pre_power, cur_power):
-    if pre_power == -1:
-        return "off"
-    elif float(cur_power) - float(pre_power) >= 2.00:
-        return "on"
+def determineWaterLevel(resis):
+    '''
+    Determine the water level according to the resistance value returned from the sensor
+    Return the level of the water, [0, 1, 2, 3, 4, 5, 6]
+    '''
+    if resis <= 1000:
+        return 5
+    elif resis > 1000 and resis <= 1400:
+        return 4
+    elif resis > 1400 and resis <= 1800:
+        return 3
+    elif resis > 1800 and resis <= 2200:
+        return 2
+    elif resis > 2200 and resis <= 2600:
+        return 1
     else:
-        return "off"
+        return 0
 
 def get_and_store_data():
-    pre_power = -1
     
     # Build connection and get current data from USB port
-    seri = serial.Serial(conf.ct_port, conf.ct_baudrate)
-    
-    # Open the file for storing data locally
+    seri = serial.Serial(conf.sc_port, conf.sc_baud)
+   
+    # Record and process the data collected
     try:
-        file = open("./res_data/ct_on_data.txt", "a+")
-    except IOError:
-        print "I/O Error in opening the file!"
-
-    # Connect to database for storing data remotely to the server
-    try:
-        conn = server_conn.connect_db(conf.DB['database_c'])
+        file = open("./water_level.txt", "a+")
+        conn = server_conn.connect_db(conf.DB['database'])
         cur = conn.cursor()
         create_table(cur)
-        while True:    
+        print "GOOD"
+        
+        while True:   
             curTime = datetime.now()
             curTime = curTime.strftime('%Y_%m_%d_%H_%M_%S')
             line = seri.readline()
-            data = line.split()
+            data = line.split(',')
             
+            print data
+
             if len(data) != 2:
                 print "Wrong Values!"
                 continue
+            else:
+                res = float(data[0])
+                vol = float(data[1])
+                print "Resistance: " + str(res) + ", Vol: " + str(vol)
             
-            status = determineIfOn(pre_power, float(data[0]))
-            
-            print data[0] + ", " + data[1]
-            print status
+            status = determineWaterLevel(res)
+            print "Level: " + str(status)
 
-            store_data_to_local(file, str(status), curTime)
-            store_data_to_server(cur, str(status))
+            store_data_to_local(file, str(status), str(vol), curTime)
+            store_data_to_server(cur, str(status), str(vol))
             
-            pre_power = data[0]
             time.sleep(2)
+    except IOError:
+        print "I/O Error in opening the file!"
     except MySQLdb.Error, e:
         print "MySQL Error [%d]: %s".format(e.args[0], e.args[1]) 
         return False
@@ -98,5 +116,9 @@ if __name__ == "__main__":
 
     if get_and_store_data() == False:
         print "Move On..."
+    else:
+        print "Finished Processing!"
+
+
 
 

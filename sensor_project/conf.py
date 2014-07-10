@@ -7,7 +7,7 @@
 # The configuration information about the database and some other stuff
 #
 
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
 
 #==================================================
 #     Local directory storing the results 
@@ -28,6 +28,8 @@ humidity_pinA = 17  # Humidity sensor pin num
 led_yellow = 25     # Led that powers on when code starts
 led_green = 23      # Led that powers on when there is internet
 
+sc_port = '/dev/ttyACM0'
+sc_baud = 115200
 
 #===================================================
 #    The time period between two collections 
