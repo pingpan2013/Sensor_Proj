@@ -64,6 +64,8 @@ def get_and_store_data():
     Get data from the usb port connected with UNO board
     Then record and process the data collected
     '''
+    pre_zone = -1;
+
     try:
         while True:   
             curTime = datetime.now()
@@ -87,11 +89,17 @@ def get_and_store_data():
                 status = determineWaterLevel(res)
                 print "Water Level: " + str(status)
                 
-                cur = conn.cursor()
-                create_table(cur)
-                store_data_to_local(file, str(status), str(vol), curTime)
-                store_data_to_server(cur, str(status), str(vol))
-                print "================================================"
+                if pre_zone != status:
+                    cur = conn.cursor()
+                    create_table(cur)
+                    store_data_to_local(file, str(status), str(vol), curTime)
+                    store_data_to_server(cur, str(status), str(vol))
+                    pre_zone = status
+                    print "================================================"
+                else:
+                    print "Same water level!"
+                    print "================================================"
+
                 time.sleep(10)
     except IOError:
         print "I/O Error in opening the file!"
