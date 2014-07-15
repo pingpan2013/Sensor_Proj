@@ -4,8 +4,37 @@ import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.dates as mdates
 import pandas as pd     # used to convert datetime64 to datetime
+from mpl_toolkits.axes_grid1 import host_subplot
+import mpl_toolkits.axisartist as AA
 
-'''Basic Drawing'''
+
+def test():
+    fig, ax1 = plt.subplots()
+    t = np.arange(0.01, 10.0, 0.01)
+    s1 = np.exp(t)
+    ax1.plot(t, s1, 'b-')
+    ax1.set_xlabel('time (s)')
+    # Make the y-axis label and tick labels match the line color.
+    ax1.set_ylabel('exp', color='b')
+    for tl in ax1.get_yticklabels():
+        tl.set_color('b')
+
+    ax2 = ax1.twinx()
+    s2 = np.sin(2*np.pi*t)
+    ax2.plot(t, s2, 'r.')
+    ax2.set_ylabel('sin', color='r')
+    for tl in ax2.get_yticklabels():
+        tl.set_color('r')
+   
+    ax3 = ax1.twinx()
+    a = np.linspace(0, 10, 100)
+    b = np.exp(-a)
+    #ax3.plot(a, b)
+    #ax3.set_ylabel('test', color='g')
+
+    plt.show()
+    
+
 def test0():
     x = [1, 2, 3, 4, 5]
     y = [1, 2, 3, 4, 5]
@@ -14,7 +43,6 @@ def test0():
     plt.show()
 
 
-'''Simple drawing'''
 def test1():
     a = np.linspace(0, 10, 100)
     b = np.exp(-a)
@@ -22,13 +50,11 @@ def test1():
     plt.show()
 
 
-'''test np.save np.array'''
 def test2():
     np.save('./graph_data/123', np.array([[1, 2, 3], [4, 5, 6]]))
     print np.load('./graph_data/123.npy')
 
 
-'''Test subplot'''
 def test3():
     t = np.arange(0, 10, 0.01)
     ax1 = plt.subplot(311)
@@ -38,7 +64,6 @@ def test3():
     plt.show()
 
 
-'''Test subplots'''
 def test4():
     x = np.linspace(0, 2*np.pi, 400)
     y = np.sin(x**2)
@@ -51,7 +76,6 @@ def test4():
     plt.show()
 
 
-'''Test date format and recarray'''
 def test5():
     x = np.array([(1.0, 2, '2012-01-01'), (2.0, 3, '2013-01-01'), (5.0, 5, '2014-01-01')], 
                     dtype=[('mois', float), ('temp', int), ('date', 'datetime64[D]')])
@@ -70,7 +94,49 @@ def test5():
 
     plt.show()
 
-test0()
+def test6():
+    host = host_subplot(111, axes_class=AA.Axes)
+    plt.subplots_adjust(right=0.75)
+
+    par1 = host.twinx()
+    par2 = host.twinx()
+
+    offset = 60
+    new_fixed_axis = par2.get_grid_helper().new_fixed_axis
+    par2.axis["right"] = new_fixed_axis(loc="right",
+                                        axes=par2,
+                                        offset=(offset, 0))
+
+    par2.axis["right"].toggle(all=True)
+
+    host.set_xlim(0, 2)
+    host.set_ylim(0, 2)
+
+    host.set_xlabel("Distance")
+    host.set_ylabel("Density")
+    par1.set_ylabel("Temperature")
+    par2.set_ylabel("Velocity")
+
+    p1, = host.plot([0, 1, 2], [0, 1, 2], label="Density")
+    p2, = par1.plot([0, 1, 2], [0, 3, 2], label="Temperature")
+    p3, = par2.plot([0, 1, 2], [50, 30, 15], label="Velocity")
+
+    par1.set_ylim(0, 4)
+    par2.set_ylim(1, 65)
+
+    host.legend()
+
+    host.axis["left"].label.set_color(p1.get_color())
+    par1.axis["right"].label.set_color(p2.get_color())
+    par2.axis["right"].label.set_color(p3.get_color())
+
+    plt.draw()
+    plt.show()
+
+    #plt.savefig("Test")
+
+
+test6()
 
 
 

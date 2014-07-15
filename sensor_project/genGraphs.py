@@ -1,14 +1,8 @@
 #!/usr/bin/python
 
-# Desc: Generate graphs for a given .csv file
-#       Used python matplotlib library, get the file path as a parameter from the terminal
-# 
-# Date: 07/14/2014 
-# Version: 1.0
-
 import matplotlib.pyplot as plt
-import numpy as np
 import matplotlib.dates as mdates
+import numpy as np
 import pandas as pd     # used to convert datetime64 to datetime
 import csv
 import sys
@@ -26,7 +20,6 @@ class Gen_Graph:
             for row in reader:
                 self.data.append(tuple(row))    
         return self.data
-
 
     def genDtype(self):
         '''Get the data type, always put DATE in the last '''
@@ -52,6 +45,7 @@ class Gen_Graph:
             if label != 'Time':
                 dtype = t['{0}'.format(label)]
                 ax.plot(pd.to_datetime(t.Time), dtype)
+        ax.set_xlabel(' date ')
         
         '''Formatting the date'''
         fig.autofmt_xdate()
@@ -66,7 +60,7 @@ class Gen_Graph:
 
 def main():
     if len(sys.argv) != 2:
-        print "Please specify the file path!"
+        print "Error with the parameters! Please specify the file path!"
         sys.exit(2)
     filename = sys.argv[1]
     
