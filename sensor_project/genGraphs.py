@@ -31,9 +31,13 @@ class Gen_Graph:
         
         print "Data Type: " + str(self.dtype)
         print '=============================================================='
+	
+    def uniqueish_color(self):
+        '''Return different colors'''
+        return plt.cm.gist_ncar(np.random.random())
 
     def genGraph(self):
-        '''Generate the graph according to the data'''
+        '''Generate the graph with unique y axis'''
         self.genDtype()
         x = np.array(self.data[1:], dtype=self.dtype) 
         np.save('./graph_data/data', x)
@@ -58,6 +62,43 @@ class Gen_Graph:
 
         plt.show()
 
+    def genGraph_m(self):
+        '''Generate the graph with multiple y axises'''
+        self.genDtype()
+        x = np.array(self.data[1:], dtype=self.dtype) 
+        np.save('./graph_data/data', x)
+        t = np.load('./graph_data/data.npy').view(np.recarray)
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+
+        '''Drawing multiple lines with different y axises in one graph'''
+        lines = []
+        labels = list(self.data[0][:-1])
+        for num in xrange(len(self.data[0]) - 1):
+            label = labels[num]
+            if num == 0:
+                dtype = t['{0}'.format(label)]
+                line1, = ax.plot(pd.to_datetime(t.Time), dtype, color=self.uniqueish_color())
+                lines.append(line1)
+                ax.set_ylabel(label)
+                ax.set_xlabel('Date')
+            elif label != 'Time':
+                dtype = t['{0}'.format(label)]
+                par = ax.twinx()
+                line2, = par.plot(pd.to_datetime(t.Time), dtype, color=self.uniqueish_color())
+                lines.append(line2)
+                par.set_ylabel(label)
+
+        '''Formatting the date'''
+        fig.autofmt_xdate()
+        ax.fmt_xdata = mdates.DateFormatter('%Y-%m-%d')
+        plt.title('Sensor Data Flow')
+        
+        '''Create the labels for different lines'''
+        ax.legend(lines, labels, loc='lower left')
+        plt.show()
+
+
 def main():
     if len(sys.argv) != 2:
         print "Error with the parameters! Please specify the file path!"
@@ -72,7 +113,7 @@ def main():
         print i
     print '=============================================================='
     
-    gg.genGraph()
+    gg.genGraph_m()
 
     print "Finished Drawing!"
 
