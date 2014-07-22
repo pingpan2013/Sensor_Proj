@@ -44,12 +44,7 @@ def store_data_to_ftp(filename):
     
     print 'Connected to FTP server'
 
-    # Access the target directory and send the picture
-    #session.pwd()
-    #file = open(conf.pi_folder_1 + filename, 'rb')
-    #session.cwd(conf.FTP_Server['ftp_folder'])
-    #session.storbinary('STOR ' + filename, file)
-    #file.close()
+    # Access the target directory and send all the pictures
     files = check_folder(conf.pi_folder_1)
     files.append(filename)
 
@@ -59,6 +54,7 @@ def store_data_to_ftp(filename):
         session.cwd(conf.FTP_Server['ftp_folder'])
         session.storbinary('STOR ' + file, file2send)
         print "Uploaded picture" + file
+        os.system("rm -f {0}".format(file))
         file2send.close()
 
     # Disconnect 

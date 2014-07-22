@@ -34,8 +34,8 @@ def get_temp_data():
         return False
 
 
-def get_mult_temp_data():
-    '''Load the deviece'''
+def get_single_temp_data():
+    '''Get temperature data in single format''' 
     os.system('modprobe w1-gpio')
     os.system('modprobe w1-therm')
     
