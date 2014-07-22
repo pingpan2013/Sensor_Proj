@@ -36,6 +36,12 @@ genGraphs.py
 ```
 Codes for generating graphs according to a specific .csv file
 
+Usage:
+```
+$ python genGraphs.py filename
+```
+The file named filename should be a .csv file with specific format. I'll attach a dicument to explain the format.
+
 ```
 server_conn.py
 ```
