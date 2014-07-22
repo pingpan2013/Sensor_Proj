@@ -1,35 +1,48 @@
 ## Sensor Project
 
 Main codes for the sensor project. Main files including:
-```humi_sensor.py
+```
+humi_sensor.py
 ```
 Humidity sensor part
 
-```water_level.py
+```
+water_level.py
 ```
 Codes for getting data from the water level sensor data
 
-```curr_sensor.py
+```
+curr_sensor.py
 ```
 Current sensor part
 
-```mois_sensor.py
+```
+mois_sensor.py
 ```
 Moisture sensor part
 
-```temp_sensor.py
+```
+temp_sensor.py
 ```
 Temperature sensor part
 
-```genGraphs.py
+```
+conf.py
+```
+Configuration file for the project, including hardware interfaces information and server information.
+
+```
+genGraphs.py
 ```
 Codes for generating graphs according to a specific .csv file
 
-```server_conn.py
+```
+server_conn.py
 ```
 Codes for connecting with FTP server and database. There might be some problems with the function store_data_to_ftp() because I made some changes to let it upload all the files(including pictures when internet is off) in the folder when internet is on, but I haven't tested the codes when connecting with the board yet. Try to test it or you can just use the previous version of the code. It should work well.  
 
-```sensor_box.py
+```
+sensor_box.py
 ```
 Main codes for controlling the Raspberry PI board. If you want to change the way it collects data, just make modifications to this file. Usually it works like this: 
 
