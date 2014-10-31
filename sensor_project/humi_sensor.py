@@ -10,11 +10,14 @@ import subprocess
 import re
 import time
 
+import conf
+
 def get_humidity_and_temp(): 
     '''
     Get humidity and temperature data from sensors
     '''
-    output = subprocess.check_output(["./adafruit_dht.py", "2302", "17"]);
+    script_path = conf.home + "SensorBox/sensor_project/adafruit_dht.py"
+    output = subprocess.check_output([script_path, "2302", "17"]);
     
     matches = re.search("Temp =\s+([0-9.]+)", output)
     if (not matches):

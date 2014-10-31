@@ -4,125 +4,97 @@
 # DESC:
 # Get data from the smart-cup water level measurement sensor.
 # Determine the status of the pump according to the returned data from sensor.
-# Store the status to remote database for furthur uses.
-# 
-# DATE:
-# 07/07/2014
 #
 
-import serial
-import MySQLdb
+import spidev
 import time
-import sys
-from datetime import datetime
+import datetime
 
 import conf
-import server_conn
 
-def store_data_to_local(file, status, vol, curTime):
-    text = str(status) + "," + str(vol) + "," + str(curTime) + "\n"
-    file.write(text)
-    
-    print "Stored data locally!"
+water_level_channel = 7
 
-def create_table(cur):
-    create_table_sql = "create table if not exists waterLevelInfor(\
-                            id int(11) auto_increment primary key,\
-                            status varchar(20) not null,\
-                            volume varchar(20) not null,\
-                            curTime timestamp default current_timestamp)"
-    cur.execute(create_table_sql)
-    print "Created table!"
+# Turn on water level sensor
+spi = spidev.SpiDev()
+spi.open(0,0)
 
-def store_data_to_server(cur, status, vol):
-    insert_table_sql = "insert into waterLevelInfor(\
-                            status, volume)\
-                        values (" + str(status) + ", " + str(vol) + ")"
-    cur.execute(insert_table_sql)
-    print "Uploaded data to database!"
-
-def determineWaterLevel(resis):
+def _get_raw_reading():
     '''
-    Determine the water level according to the resistance value returned from the sensor
-    Return the level of the water, [0, 1, 2, 3, 4, 5, 6]
+    Gets the raw reading from the water level sensor on a channel of the
+    MCP3008 chip over GPIO.
     '''
-    if resis <= 1000:
-        return 5
-    elif resis > 1000 and resis <= 1400:
-        return 4
-    elif resis > 1400 and resis <= 1800:
-        return 3
-    elif resis > 1800 and resis <= 2200:
-        return 2
-    elif resis > 2200 and resis <= 2600:
-        return 1
-    else:
-        return 0
+    spidata = spi.xfer2([1, (8 + water_level_channel)<<4, 0])
+    adcout = ((spidata[1] & 3) << 8) + spidata[2]
+    return adcout
 
-def get_and_store_data():
+def _calibrate():
     '''
-    Get data from the usb port connected with UNO board
-    Then record and process the data collected
+    Have the user help calibrate the sensor.
     '''
-    pre_zone = -1;
+    import numpy
+    inches = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0]
+    avg_readings = []
+    print "Begin calibration."
+    for i in inches:
+        raw_input("Submerge the sensor to " + str(i) + " inches and press Enter.")
+        print("Please wait 5 seconds (do NOT change submersion depth!)...")
+        avg = []
+        for x in range(0, 500):
+            avg.append(round(((_get_raw_reading() * 3300) / 1024),0))
+            time.sleep(0.01)
+        avg_readings.append(sum(avg) / len(avg))
+    regression = numpy.polyfit(avg_readings, inches, 1)
+    print "Calibration complete!"
+    print "slope =", str(regression[0]), ", y-intercept =", str(regression[1])
+    print "Replace the appropriate values in conf.py for more accurate readings."
+    return regression
 
-    try:
-        while True:   
-            curTime = datetime.now()
-            curTime = curTime.strftime('%Y_%m_%d_%H_%M_%S')
-            
-            file = open("./water_level.txt", "a+")
-            conn = server_conn.connect_db(conf.DB['database'])
-            seri = serial.Serial(conf.sc_port, conf.sc_baud)
-            
-            with conn, seri, file:
-                line = seri.readline()
-                data = line.split(',')
-                if len(data) != 2:
-                    print "Wrong Values! Beginning the next collection!"
-                    continue
-                else:
-                    res = float(data[0])
-                    vol = float(data[1])
-                    print "Resistance: " + str(res) + ", Vol: " + str(vol)
-            
-                status = determineWaterLevel(res)
-                print "Water Level: " + str(status)
-                
-                if pre_zone != status:
-                    cur = conn.cursor()
-                    create_table(cur)
-                    store_data_to_local(file, str(status), str(vol), curTime)
-                    store_data_to_server(cur, str(status), str(vol))
-                    pre_zone = status
-                    print "================================================"
-                else:
-                    print "Same water level!"
-                    print "================================================"
+def _convert_to_inches(value, slope=-0.0232, yintercept=62.5864):
+    '''
+    Determine the water level in inches according to the value returned from
+    the sensor.
+    Return the level of the water in the range [0, 5].
+    '''
+    return max(slope * float(value) + yintercept, 0.0)
 
-                time.sleep(10)
-    except IOError:
-        print "I/O Error in opening the file!"
-    except MySQLdb.Error, e:
-        print "MySQL Error [{0}]: {1}".format(e.args[0], e.args[1]) 
-    finally:
-        if file.closed == False:
-            file.close()
-        
-        if seri.isOpen() == True:
-            seri.close()
-        
-        if conn.open == False:
-            conn.close()
-        print "All Interfaces are closed! Exiting ..."
+def get_inches(timespan=1):
+    '''
+    Get submersion depth in inches using calibration data from conf.
+    timespan controls how long to wait for the final value, to help eliminate
+    noise in the data.
+    '''
+    slope = conf.water_level_slope
+    intercept = conf.water_level_yintercept
+    voltages = []
+    for i in range(0, timespan * 100):
+        voltages.append(round(((_get_raw_reading() * 3300) / 1024),0))
+        time.sleep(0.01)
+    avg_voltage = sum(voltages) / len(voltages)
+    inches = _convert_to_inches(avg_voltage, slope, intercept)
+    return inches
 
 if __name__ == "__main__":
-
-    if get_and_store_data() == False:
-        print "Move On..."
-    else:
-        print "Finished Processing!"
-
-
-
-
+    '''
+    Debugging.
+    '''
+    reading_interval = 1
+    regression = _calibrate()
+    print "Debugging; press Ctrl+C at any time to stop."
+    print "A new reading will be printed every", reading_interval, "seconds."
+    try:
+        while True:
+            # Store multiple voltages to smooth out noise.
+            # Voltages are measured in mV.
+            voltages = []
+            for i in range(0, reading_interval * 100):
+                voltages.append(round(((_get_raw_reading() * 3300) / 1024),0))
+                time.sleep(0.01)
+            avg_voltage = sum(voltages) / len(voltages)
+            now = datetime.datetime.now()
+            timestamp = now.strftime('%Y_%m_%d_%H_%M_%S')
+            depth = _convert_to_inches(avg_voltage, regression[0], regression[1])
+            print "Time:", timestamp, "Inches:", depth
+    except KeyboardInterrupt:
+        print "\nCaught KeyboardInterrupt; stopping debugging."
+    except Exception as e:
+        print "Exception caught: ", e

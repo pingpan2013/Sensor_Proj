@@ -7,65 +7,84 @@
 # The configuration information about the database and some other stuff
 #
 
-# import RPi.GPIO as GPIO
+import logging
+
+#===================================================
+#     SensorBox software version information 
+#===================================================
+sensorbox_version = "v1.1.2"
+
+#===================================================
+#     Sensor configuration information 
+#===================================================
+PI_id = 7 # ID of computer
+using_camera = False
+num_moisture_sensors = 3
+num_temp_sensors = 0
+using_humidity_sensor = False
+using_water_level_sensor = False
+water_level_slope = -0.0232162397183
+water_level_yintercept = 62.5863911235
+water_level_interval = 1
+# Real-world location for storage in database
+location = "Test Site"
+# Upload information
+table_name = 'Test_' + str(PI_id)
+ftp_name = '/Test/' + str(PI_id) + '/'
+# Units information
+temperature_units = "Fahrenheit"
+precision = 2
 
 #==================================================
-#     Local directory storing the results 
+#     Local directories for storing the results 
 #==================================================
-pi_folder = '/home/pi/Desktop/pictures/'      # the directory for storing the results if the internet is on
-pi_folder_1 = '/home/pi/Desktop/pictures_1/'  # the directory for storing the results if the internet is down
-usb_folder = '/media/PARJANA03_/'             # USB saving directory
+home = '/home/pi/'
+desktop = home + 'Desktop/'
+csv_filename = "sensorbox" + str(PI_id) + "_data.csv"
+# The directory for storing the results if the internet is on
+online_pictures_folder = desktop + 'pictures_online/'
+# The directory for storing the results if the internet is down
+offline_pictures_folder = desktop + 'pictures_offline/'
+# USB saving directory
+usb_folder = '/media/PARJANA03_/'
 
 #===================================================
 #     The hardware interface information 
 #===================================================
-PI_id = 12          # ID of computer
-moisture_pinA = 0   # Moisture pin A (moisture pins can be in range from (0-8))
-moisture_pinB = 1   # Moisture pin B
-moisture_pinC = 2   # Moisture pin C
-pin_number = 22     # Pin that is connected to lightbulb
-humidity_pinA = 17  # Humidity sensor pin num
-led_yellow = 25     # Led that powers on when code starts
-led_green = 23      # Led that powers on when there is internet
-
 sc_port = '/dev/ttyACM0'
 sc_baud = 115200
 
 #===================================================
-#    The time period between two collections 
+#    The time (in seconds) between two collections 
 #===================================================
-period = 120
+period = 600
 
 #===================================================
 #     Database and FTP Server Information 
 #===================================================
+
 DB = {
     'host' : '198.57.219.221', 
     'user' : 'theparja_georgeg',
     'password' : 'ggrzywacz2190',
-    'database' : 'theparja_residential'
+    'database' : 'theparja_NADF',
+    'table' : table_name
 }
 
 FTP_Server = { 
     'host' : '198.57.219.221',
     'user' : 'data@theparjanadistribution.com',
     'password' : 'Parjana1247',
-    'ftp_folder' : '/Residential/Basement_Monitoring/85_Lake_Brighton_MI/Basement_Camera_1/'
+    'ftp_folder' : ftp_name
 }
 
-
-#===================================================
-#             Utility Functions
-#===================================================
-def control_LED(pin_num, ifOn):
-    '''
-    Control the LED light according to the pin number
-        if ifOn = True, to turn it on
-        else to turn it off
-    '''
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(pin_num, GPIO.OUT)
-    GPIO.output(pin_num, ifOn)
-
-
-
+#==================================================
+#     Log configuration for debugging
+#==================================================
+# log_level controls which log messages will be recorded
+# See https://docs.python.org/2/howto/logging.html for more information
+log_level = logging.WARNING
+log_name = 'sensorbox.log'
+previous_log_name = 'sensorbox_previous.log'
+log_path = desktop + log_name
+previous_log_path = desktop + previous_log_name

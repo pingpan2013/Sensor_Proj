@@ -2,12 +2,16 @@
 
 #
 # DESC:
-# The moisture sensor module, return the mositrue values of 
+# The moisture sensor module, return the moisture values of 
 # the three different sensors
 #
 
-import spidev 
-import conf
+import spidev
+
+# Moisture channels can be in a range from 0 to 2
+pinA = 0
+pinB = 1
+pinC = 2
 
 # Turn on moisture sensors
 spi = spidev.SpiDev()
@@ -15,9 +19,9 @@ spi.open(0,0)
 
 def check_moisture(adcnum):
     '''
-    Read moisture from pins
+    Read moisture from MCP3008 chip channels
     '''
-    if((adcnum > 7) or (adcnum < 0)):
+    if((adcnum > 2) or (adcnum < 0)):
         print 'Wrong pin number'
         return -1
     
@@ -26,15 +30,17 @@ def check_moisture(adcnum):
     return adcout
 
 
-def get_moisture():
+def get_moistures(num_expected):
     '''
-    Get the mositrue info from sensors
+    Get the moisture info from sensors.
     '''
-    moistureA = check_moisture(conf.moisture_pinA)
-    moistureB = check_moisture(conf.moisture_pinB)
-    moistureC = check_moisture(conf.moisture_pinC)
+    moistures = []
+    if num_expected > 0:
+        if num_expected >= 1:
+            moistures.append(check_moisture(pinA) / 1023.0)
+        if num_expected >= 2:
+            moistures.append(check_moisture(pinB) / 1023.0)
+        if num_expected >= 3:
+            moistures.append(check_moisture(pinC) / 1023.0)
 
-    return (moistureA, moistureB, moistureC) 
-
-
-
+    return tuple(moistures) 
